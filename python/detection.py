@@ -22,22 +22,26 @@ class detection_algorithms:
 
         return f_est, N/self.fs
 
-    def lowpass_filter(self, sample):
-        N = len(sample)
+
+    def increase_spectral_resolution(self, fs, x_n, t_n):
+        pad_factor = 1
+        x_n_padded = np.concatenate(x_n,np.zeros(int(len(x_n)*pad_factor)))
+        N = len(x_n_padded)
+
+        X_m = np.fft.fft(x_n_padded)
+
+        #freq= np.fft.rfftfreq(N, 1 / fs)
+
+        f_est = np.argmax(X_m)*fs/N
+
+        return f_est, len(t_n)/fs
 
 
-    def moving_average(self, sample):
+    def improve_noise_robustness():
         pass
 
-    def autocorrelation_detection(self, sample):
-        N = len(sample)
-        autocorr = np.correlate(sample, sample, mode='full')  # Compute full autocorrelation
-        autocorr = autocorr[N:]  # Take the second half
-        peaks = np.where((autocorr[:-1] < autocorr[1:]) & (autocorr[1:] > autocorr[2:]))[0]
+    def estimate_fundamental_frequency_more_reliably():
+        pass
 
-        if len(peaks) > 0:
-            f_est = self.fs / peaks[0]
-        else:
-            f_est = 0  # No clear fundamental frequency
-
-        return f_est, N / self.fs
+    def adapting_to_dynamic_signals():
+        pass

@@ -24,24 +24,15 @@ class signal_generation:
         signal = np.concatenate((signal1, signal2))
 
         x_n = signal/max(abs(signal))
-
         return  x_n, time
 
-    def get_note():
-        fs, signal = sp.io.wavfile.read("data/B_oboe.wav")
+    def get_sound(file_path):
+        fs, signal = sp.io.wavfile.read(file_path)
         x_n = signal/max(abs(signal))               # Scale sample values to the range -1 < x[n] < 1
         N = len(x_n)
         time = np.arange(N)/fs
 
         return fs, x_n, time, N
-
-    def get_voice():
-        fs, signal = sp.io.wavfile.read("data/Zauberflöte_vocal.wav")
-        x_n = signal/max(abs(signal))
-        N = len(x_n)
-        time = np.arange(N)/fs
-
-        return  fs, x_n, time, N
 
     def generate_noisy_signal(signal, SNR_N, Noise_A):
         N = len(signal)

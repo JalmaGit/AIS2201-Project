@@ -11,7 +11,7 @@ class signal_generation:
 
     def generate_pure_sinewave(fs, N, f, A):
         time = np.arange(N)/fs
-        signal = A*np.cos(2*np.pi*f*time)
+        signal = A*np.cos(2*np.pi*f*time) + A/2*np.cos(2*np.pi*f*2*time)
 
         x_n = signal/max(abs(signal))
 
@@ -28,6 +28,10 @@ class signal_generation:
 
     def get_sound(file_path):
         fs, signal = sp.io.wavfile.read(file_path)
+
+        if (len(signal.shape) == 2):
+            signal = signal[:,0]
+
         x_n = signal/max(abs(signal))               # Scale sample values to the range -1 < x[n] < 1
         N = len(x_n)
         time = np.arange(N)/fs

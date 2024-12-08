@@ -30,38 +30,24 @@ class detection_algorithms:
 
         return f_est
         
-    def frequency_domain_autocorrelation(self,fs, sample):
-    # Compute the Fourier transform of the input signal
-        fft_signal = np.fft.fft(sample)
-        
-        # Multiply the Fourier transform by its conjugate
-        power_spectrum = fft_signal * np.conjugate(fft_signal)
-        
-        # Compute the inverse Fourier transform of the product
-        autocorrelation = np.fft.ifft(power_spectrum)
+    def sliding_window_fft(self, fs, signal, window_size, step_size):
 
-        # Find the first peak in the autocorrelation
-        for lag in range(1, len(autocorrelation)):
-            if autocorrelation[lag] > autocorrelation[lag - 1] and autocorrelation[lag] > autocorrelation[lag + 1]:
-                fundamental_frequency = fs / lag
-                return fundamental_frequency
-        return 0
-    
-    def spectral_subtraction(self, signal, noise, fs):
-        # Estimate the noise spectrum
-        noise_spectrum = np.abs(np.fft.fft(noise))
-        
-        # FFT of the signal
-        signal_spectrum = np.fft.fft(signal)
-        
-        # Subtract noise spectrum
-        clean_spectrum = np.abs(signal_spectrum) - noise_spectrum
-        clean_spectrum = np.maximum(clean_spectrum, 0)  # Avoid negative values
-        
-        # Reconstruct the signal
-        clean_signal = np.fft.ifft(clean_spectrum * np.exp(1j * np.angle(signal_spectrum))).real
-        return clean_signal
+        window_samples = int(window_size * fs)
+        step_samples = int(step_size * fs)
+        n_windows = (len(signal) - window_samples) // step_samples + 1
 
+        estimated_frequencies = []
+        
+        for i in range(n_windows):
+            start = i * step_samples
+            end = start + window_samples
+            segment = signal[start:end]
+            fft_segment = np.abs(np.fft.fft(segment))
+            freq_axis = np.fft.fftfreq(len(segment), 1/fs)
+            peak_freq = freq_axis[np.argmax(fft_segment[:len(freq_axis)//2])]
+            estimated_frequencies.append(peak_freq)
+        
+        return estimated_frequencies[0]
 
     def increase_spectral_resolution(self, x_n, padding):
         pad_factor = padding

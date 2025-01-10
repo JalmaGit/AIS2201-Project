@@ -14,8 +14,9 @@ class detection_algorithms:
 
     def simple_detection(self, fs, sample):
         N = len(sample)
-        Xm = sp.fft.rfft(sample).__abs__()
-        f_est = np.argmax(Xm)*fs/N
+        Xm = np.fft.rfft(sample).__abs__()
+
+        f_est = np.argmax(Xm) * fs / N
 
         return f_est
     
@@ -23,46 +24,42 @@ class detection_algorithms:
         N = len(sample)
         Xm = np.abs(np.fft.rfft(sample))
         hps = Xm.copy()
-        for h in range(2, harmonics):  # Number of harmonics
+        for h in range(2, 2+harmonics):  # Number of harmonics
             downsampled = Xm[::h]
             hps[:len(downsampled)] *= downsampled
         f_est = np.argmax(hps) * fs / N
 
         return f_est
-        
-    def sliding_window_fft(self, fs, signal, window_size, step_size):
 
-        window_samples = int(window_size * fs)
-        step_samples = int(step_size * fs)
-        n_windows = (len(signal) - window_samples) // step_samples + 1
+    def autocorrelation(self, fs, sample):
 
-        estimated_frequencies = []
+        Xm = np.fft.rfft(sample)
+        power_spec = np.abs(Xm)**2
+
+        power_spec = power_spec/max(power_spec)
         
-        for i in range(n_windows):
-            start = i * step_samples
-            end = start + window_samples
-            segment = signal[start:end]
-            fft_segment = np.abs(np.fft.fft(segment))
-            freq_axis = np.fft.fftfreq(len(segment), 1/fs)
-            peak_freq = freq_axis[np.argmax(fft_segment[:len(freq_axis)//2])]
-            estimated_frequencies.append(peak_freq)
-        
-        return estimated_frequencies[0]
+        #plt.plot(power_spec)
+        #plt.show()
+
+        threashold = 0.2
+        f_est = 0
+        for index, element in enumerate(power_spec):
+            if element > threashold:
+                f_est = index * fs / len(sample)
+                break
+        print(f_est)
+
+        return f_est
 
     def increase_spectral_resolution(self, x_n, padding):
-        pad_factor = padding
-        x_n_padded = np.concatenate((x_n,np.zeros(int(len(x_n)*pad_factor))))
+        x_n_padded = np.pad(x_n, padding, "constant")
 
         return x_n_padded
 
 
-    def low_pass(self, fs, x_n,):
-        f_upper = 4200
-        f_lower = 25
+    def low_pass(self, fs, x_n, f_lower=25, f_upper=4200):
         f_c=(f_upper-f_lower)/2         #Cuttoff Frequency
         M = M_min=1337        #M_min
-
-        ## I need some Propper explenation  
 
         D = M//2 #This is also the Counterpoint
             

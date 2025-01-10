@@ -43,10 +43,10 @@ class signal_generation:
             signal = signal[:,0]
 
         x_n = signal/max(abs(signal))               # Scale sample values to the range -1 < x[n] < 1
-        N = len(x_n)
+        N = len(x_n[10000:])
         time = np.arange(N)/fs
 
-        return fs, x_n, time, N
+        return fs, x_n[10000:], time[:10000], N
 
     def generate_noisy_signal(signal, Levels, Noise_A):
         N = len(signal)

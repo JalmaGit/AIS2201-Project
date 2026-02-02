@@ -61,17 +61,17 @@ def test(signal, fs, title, one_singal = 48000*4, loops = 12, bufferSize = 2048)
         #f_est1 = detect.auto_correlation_pitch(x_n, fs)
         #f_est2 = detect.harmonic_spectrum(x_n,  harmonics , mode, fs)
 
-        #x_n_buf = mods.sliding_buffer(x_n,size, fs)
+        x_n_buf = mods.sliding_buffer(x_n,size, fs)
         #f_est3 = detect.simple_detection(x_n_buf, fs)
         #f_est4 = detect.auto_correlation_pitch(x_n_buf, fs)
         #f_est5 = detect.harmonic_spectrum(x_n_buf,  harmonics , mode, fs)
 
-        #x_n_p = mods.zero_padding(x_n_buf,delta_f,fs)
-        #x_n_f = mods.band_pass_filter(x_n_p, low_cut, high_cut, taps, window, fs)
+        x_n_p = mods.zero_padding(x_n_buf,delta_f,fs)
+        x_n_f = mods.band_pass_filter(x_n_p, low_cut, high_cut, taps, window, fs)
 
-        #f_est6 = detect.simple_detection(x_n_f, fs)
-        #f_est7 = detect.auto_correlation_pitch(x_n_f, fs)
-        #f_est8 = detect.harmonic_spectrum(x_n_f,  harmonics , mode, fs)
+        f_est6 = detect.simple_detection(x_n_f, fs)
+        f_est7 = detect.auto_correlation_pitch(x_n_f, fs)
+        f_est8 = detect.harmonic_spectrum(x_n_f,  harmonics , mode, fs)
 
 
 
@@ -125,7 +125,7 @@ def test(signal, fs, title, one_singal = 48000*4, loops = 12, bufferSize = 2048)
         plt.show()
 
 
-    binding = True
+    binding = False
     
     print(len(freq_est))
 
@@ -145,7 +145,7 @@ def test(signal, fs, title, one_singal = 48000*4, loops = 12, bufferSize = 2048)
         plt.grid()
         plt.show()
 
-    normal = False
+    normal = True
 
     if normal == True:
         SNR = np.logspace(-2, 4, len(freq_est8))
